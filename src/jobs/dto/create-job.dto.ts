@@ -5,25 +5,30 @@
 
 
 import { IsString, IsOptional, IsUrl } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateJobDto {
 
-    @IsString()
-    title: string;
+  @ApiProperty({ example: 'Backend Developer' })
+  @IsString()
+  title: string;
 
-    @IsString()
-    company: string;
+  @ApiProperty({ example: 'Acme Corp' })
+  @IsString()
+  company: string;
 
-    @IsString()
-    @IsOptional()  // → this field is optional
-    location?: string;
+  @ApiPropertyOptional({ example: 'Remote' })
+  @IsOptional()
+  @IsString()
+  location?: string;
 
-    @IsUrl()
-    @IsOptional()
-    url?: string;
+  @ApiPropertyOptional({ example: 'https://acme.com/jobs/1' })
+  @IsOptional()
+  @IsUrl()
+  url?: string;
 
-
-    @IsOptional()
-    @IsString()
-    description?: string;
+  @ApiPropertyOptional({ example: 'Building APIs with NestJS and TypeORM' })
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
