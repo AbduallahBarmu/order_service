@@ -8,23 +8,27 @@ import {
   Param,
   Query,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JobsService } from './jobs.service.js';
 import { CreateJobDto } from './dto/create-job.dto.js';
 import { UpdateJobDto } from './dto/update-job.dto.js';
 import { QueryJobsDto } from './dto/query-jobs.dto.js';
 
-@ApiTags('Jobs')  // groups all endpoints under "Jobs" in Swagger UI
+@ApiTags('Jobs')
 @Controller('jobs')
 export class JobsController {
 
   constructor(private readonly jobsService: JobsService) {}
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new job listing' })
   @ApiResponse({ status: 201, description: 'Job created successfully' })
-  @ApiResponse({ status: 400, description: 'Validation failed' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   create(@Body() dto: CreateJobDto) {
     return this.jobsService.create(dto);
   }
@@ -36,7 +40,7 @@ export class JobsController {
   }
 
   @Get(':id')
-  @ApiOperation({summary: 'Get a job by its ID'})
+  @ApiOperation({ summary: 'Get a job by its ID' })
   @ApiResponse({ status: 200, description: 'Job found' })
   @ApiResponse({ status: 404, description: 'Job not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
@@ -44,9 +48,11 @@ export class JobsController {
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a job listing' })
   @ApiResponse({ status: 200, description: 'Job updated successfully' })
-  @ApiResponse({ status: 404, description: 'Job not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateJobDto,
@@ -55,9 +61,11 @@ export class JobsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a job listing' })
   @ApiResponse({ status: 200, description: 'Job deleted' })
-  @ApiResponse({ status: 404, description: 'Job not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.jobsService.remove(id);
   }
